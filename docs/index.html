@@ -20,11 +20,22 @@
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    input {
+    /* General text input styling */
+    input[type="text"],
+    input[type="number"] {
       width: 80%;
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
+    }
+    /* Override styling for color inputs */
+    input[type="color"] {
+      width: auto;
+      padding: 0;
+      margin: 10px;
+      height: 2.5em;
+      border: none;
+      background: none;
     }
     label {
       display: block;
@@ -44,17 +55,17 @@
 <body>
   <div class="container">
     <h1>QR Code Generator</h1>
-    <label for="text">Text or URL:</label>
-    <input id="text" type="text" placeholder="Enter text or URL">
+    <label for="text" >Text or URL:</label>
+    <input id="text" onblue="generateQRCode()" type="text" value="example.com" >
     
     <label for="size">Size (px):</label>
-    <input id="size" type="number" value="300">
+    <input id="size" onblur="generateQRCode()" type="number" value="300">
     
     <label for="dark">Foreground Color:</label>
-    <input id="dark" type="color" value="#000000">
+    <input id="dark" onblur="generateQRCode()" type="text" value="#000000">
     
     <label for="light">Background Color:</label>
-    <input id="light" type="color" value="#FFFFFF">
+    <input id="light" onblur="generateQRCode()" type="text" value="#FFFFFF">
     
     <br>
     <button onclick="generateQRCode()">Generate QR Code</button>
