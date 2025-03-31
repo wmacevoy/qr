@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>QR Code Generator with QRCode.js</title>
+  <title>QR Generator</title>
   <style>
     body {
       font-family: sans-serif;
@@ -12,71 +12,61 @@
       padding: 20px;
     }
     .container {
-      max-width: 400px;
       margin: 0 auto;
       text-align: center;
       background: #fff;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 120%;
     }
-    /* General text input styling */
-    input[type="text"],
-    input[type="number"] {
-      width: 80%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    /* Override styling for color inputs */
-    input[type="color"] {
-      width: auto;
-      padding: 0;
-      margin: 10px;
-      height: 2.5em;
-      border: none;
-      background: none;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
+    input {
+      font-size: 100%;
     }
     button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin: 10px 5px;
+      font-size: 100%;
+    }
+    input[type='number']{
+    width: 5em;
+    } 
+
+    .container div {
+      display: inline-block;
     }
     #qrcode {
       margin-top: 20px;
+      display: inline-block;
+    }
+    #preview {
+      display: inline-block;
     }
   </style>
 </head>
-<body>
+<body onload="update()">
   <div class="container">
-    <h1>QR Code Generator</h1>
-    <label for="text" >Text or URL:</label>
-    <input id="text" onblue="generateQRCode()" type="text" value="example.com" >
-    
-    <label for="size">Size (px):</label>
-    <input id="size" onblur="generateQRCode()" type="number" value="300">
-    
-    <label for="dark">Foreground Color:</label>
-    <input id="dark" onblur="generateQRCode()" type="text" value="#000000">
-    
-    <label for="light">Background Color:</label>
-    <input id="light" onblur="generateQRCode()" type="text" value="#FFFFFF">
-    
+<!--    <button onclick="generateQRCode()">Generate QR Code</button> -->
     <br>
-    <button onclick="generateQRCode()">Generate QR Code</button>
-    <button onclick="copyQRCode()">Copy QR Code</button>
-    <div id="qrcode"></div>
+    <div>
+    <label for="text" >&nbsp;&nbsp;URL:</label>
+    <input id="text" onblur="update()" type="text" size="20" value="https://example.com" >
+    <label for="size">&nbsp;&nbsp;Px:</label>
+    <input id="size" onblur="update()" type="number" size="5" value="256">
+    
+    <label for="dark">&nbsp;&nbsp;Fg:</label>
+    <input id="dark" onchange="update()" type="text" size="8" value="#000000">
+    
+    <label for="light">&nbsp;&nbsp;Bg:</label>
+    <input id="light" onchange="update()" type="text" size="8" value="#FFFFFF">
+    <button onclick="update()">Update</button>
+    </div>
+    <h1><a id="qrLink" href="https://example.com">https://example.com</a></h1>
+    <div id="qrCode"></div>
   </div>
 
   <!-- Include QRCode.js library from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="qrcode.js"></script>
   <script>
-    function generateQRCode() {
+    function update() {
       var text = document.getElementById('text').value;
       var size = parseInt(document.getElementById('size').value);
       var dark = document.getElementById('dark').value;
@@ -88,11 +78,12 @@
       }
       
       // Clear any previous QR code
-      var qrContainer = document.getElementById('qrcode');
-      qrContainer.innerHTML = "";
+      const qrCode = document.getElementById('qrCode');
+      const qrLink = document.getElementById('qrLink');
+      qrCode.innerHTML = "";
       
       // Create a new QRCode instance
-      new QRCode(qrContainer, {
+      new QRCode(qrCode, {
         text: text,
         width: size,
         height: size,
@@ -100,34 +91,8 @@
         colorLight: light,
         correctLevel: QRCode.CorrectLevel.H
       });
-    }
-
-    function copyQRCode() {
-      var qrContainer = document.getElementById('qrcode');
-      var img = qrContainer.querySelector('img');
-      
-      if (!img) {
-        alert("No QR code to copy. Please generate one first.");
-        return;
-      }
-      
-      // Get the data URL of the generated QR code image
-      var dataUrl = img.src;
-      
-      // Convert the data URL to a Blob and write it to the clipboard using the Clipboard API
-      fetch(dataUrl)
-        .then(res => res.blob())
-        .then(blob => {
-          const item = new ClipboardItem({ "image/png": blob });
-          navigator.clipboard.write([item]).then(() => {
-            alert("QR code copied to clipboard!");
-          }, error => {
-            alert("Failed to copy QR code: " + error);
-          });
-        })
-        .catch(error => {
-          alert("Error copying QR code: " + error);
-        });
+      qrLink.href = text;
+      qrLink.innerText = text;
     }
   </script>
 </body>
